@@ -1,0 +1,26 @@
+name: Build insert_dylib for macOS (x86_64 and arm64)
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14  # macOS Sonoma，支持 Apple Silicon 公共 runner
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Build insert_dylib
+      run: |
+        clang -arch ${{ matrix.arch }} insert_dylib.c -o insert_dylib-${{ matrix.arch }}
+
+    - name: Archive built binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: insert_dylib-${{ matrix.arch }}
+        path: insert_dylib-${{ matrix.arch }}
